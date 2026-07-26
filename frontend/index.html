@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PlantGuard AI — Plant Disease Detection</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">🌿</span>
+      <span class="brand-name">PlantGuard AI</span>
+    </div>
+    <nav>
+      <a href="#how-it-works">How it works</a>
+      <a href="#stats">Stats</a>
+      <a id="api-status-link" href="#">API: <span id="api-status">checking…</span></a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Diagnose plant diseases instantly with AI</h1>
+      <p>Upload a photo or scan a leaf live with your camera to get an instant diagnosis, severity rating, and treatment plan — powered by a deep learning model trained on 38 crop/disease classes.</p>
+    </section>
+
+    <section class="upload-card">
+      <div class="mode-tabs">
+        <button id="uploadTabBtn" class="mode-tab active">📤 Upload Photo</button>
+        <button id="cameraTabBtn" class="mode-tab">📷 Use Camera</button>
+      </div>
+
+      <!-- Upload mode -->
+      <div id="uploadMode" class="mode-panel">
+        <div id="dropzone" class="dropzone">
+          <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden />
+          <div id="dropzoneContent">
+            <div class="upload-icon">📤</div>
+            <p><strong>Click to upload</strong> or drag and drop a leaf photo</p>
+            <p class="hint">JPEG, PNG or WEBP — max 10MB</p>
+          </div>
+          <img id="preview" class="preview" hidden />
+        </div>
+      </div>
+
+      <!-- Camera mode -->
+      <div id="cameraMode" class="mode-panel" hidden>
+        <div id="cameraContainer" class="camera-container">
+          <video id="cameraVideo" class="camera-video" autoplay playsinline muted></video>
+          <canvas id="cameraCanvas" hidden></canvas>
+          <img id="capturedPreview" class="preview" hidden />
+          <div id="cameraPlaceholder" class="camera-placeholder">
+            <div class="upload-icon">📷</div>
+            <p><strong>Tap "Start Camera"</strong> to scan a leaf</p>
+            <p class="hint">Works best in good lighting, leaf filling the frame</p>
+          </div>
+        </div>
+        <div class="camera-controls">
+          <button id="startCameraBtn" class="secondary-btn">Start Camera</button>
+          <button id="captureBtn" class="secondary-btn" hidden>📸 Capture</button>
+          <button id="retakeBtn" class="secondary-btn" hidden>↺ Retake</button>
+          <button id="switchCameraBtn" class="secondary-btn" hidden>🔄 Switch Camera</button>
+        </div>
+      </div>
+
+      <button id="analyzeBtn" class="primary-btn" disabled>Analyze Leaf</button>
+      <div id="loader" class="loader" hidden><div class="spinner"></div><span>Analyzing image…</span></div>
+      <div id="errorBox" class="error-box" hidden></div>
+    </section>
+
+    <section id="resultCard" class="result-card" hidden>
+      <div class="result-header">
+        <div>
+          <h2 id="resultDisease">—</h2>
+          <p id="resultCrop" class="crop-label">—</p>
+        </div>
+        <div id="severityBadge" class="severity-badge">—</div>
+      </div>
+
+      <div class="confidence-row">
+        <span>Confidence</span>
+        <div class="confidence-bar"><div id="confidenceFill" class="confidence-fill"></div></div>
+        <span id="confidenceValue">0%</span>
+      </div>
+
+      <p id="resultDescription" class="description"></p>
+
+      <div class="result-grid">
+        <div class="result-block">
+          <h3>Symptoms</h3>
+          <ul id="symptomsList"></ul>
+        </div>
+        <div class="result-block">
+          <h3>Treatment</h3>
+          <ul id="treatmentList"></ul>
+        </div>
+        <div class="result-block">
+          <h3>Prevention</h3>
+          <ul id="preventionList"></ul>
+        </div>
+      </div>
+
+      <div class="top3-section">
+        <h3>Other possibilities</h3>
+        <div id="top3List" class="top3-list"></div>
+      </div>
+
+      <p class="inference-meta">Inference time: <span id="inferenceTime">—</span> ms</p>
+    </section>
+
+    <section id="stats" class="stats-section">
+      <div class="stat-card"><span id="statClasses" class="stat-value">—</span><span class="stat-label">Disease Classes</span></div>
+      <div class="stat-card"><span id="statCrops" class="stat-value">—</span><span class="stat-label">Supported Crops</span></div>
+      <div class="stat-card"><span id="statAccuracy" class="stat-value">—</span><span class="stat-label">Target Accuracy</span></div>
+      <div class="stat-card"><span id="statSpeed" class="stat-value">—</span><span class="stat-label">Avg Inference (ms)</span></div>
+    </section>
+
+    <section id="how-it-works" class="how-section">
+      <h2>How it works</h2>
+      <ol>
+        <li>Upload a clear photo of a single plant leaf.</li>
+        <li>The image is preprocessed and passed to an EfficientNetB3 model trained on the PlantVillage dataset.</li>
+        <li>The model returns the predicted disease class along with a confidence score.</li>
+        <li>The API enriches the prediction with symptoms, treatment steps, and prevention tips.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built for the Major Project — Agriculture &amp; Intelligent Supply Chains track. Not a substitute for professional agronomic advice.</p>
+  </footer>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

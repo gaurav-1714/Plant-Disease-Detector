@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Model artifacts (large files — use Git LFS or external storage)
+backend/model/*.keras
+backend/model/*.h5
+backend/model/training_metrics.json
+!backend/model/.gitkeep
+
+# Dataset
+data/
+*.zip
+
+# Env / secrets
+.env
+*.env.local
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log

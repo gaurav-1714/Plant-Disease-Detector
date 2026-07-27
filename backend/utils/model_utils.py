@@ -16,6 +16,45 @@ IMG_SIZE      = (224, 224)
 MODEL_PATH    = os.getenv("MODEL_PATH", "model/plant_disease_model.keras")
 NUM_CLASSES   = 38
 
+# Optional: Google Drive file ID for auto-downloading the trained model at startup
+# if it isn't already present at MODEL_PATH (used when the .keras file is too large
+# to commit directly to the GitHub repo). Set via env var on Render, or leave the
+# default below as a fallback.
+MODEL_DRIVE_FILE_ID = os.getenv("MODEL_DRIVE_FILE_ID", "1oYPhPG22zzM7MBKFVVfwErFQfTB-DH2-")
+
+
+def _download_model_if_missing():
+    """Download the trained model from Google Drive if it isn't already on disk.
+
+    Runs once at startup. Safe to call even if MODEL_DRIVE_FILE_ID is unset —
+    it just does nothing in that case, and load_model() falls back to the mock
+    model as before.
+    """
+    if os.path.exists(MODEL_PATH):
+        return  # already present (e.g. committed to the repo, or downloaded previously)
+
+    if not MODEL_DRIVE_FILE_ID:
+        return  # no Drive file configured — nothing to download
+
+    try:
+        import gdown
+    except ImportError:
+        logger.warning("gdown not installed — cannot auto-download model from Drive. "
+                        "Add 'gdown' to requirements.txt.")
+        return
+
+    os.makedirs(os.path.dirname(MODEL_PATH) or ".", exist_ok=True)
+    url = f"https://drive.google.com/uc?id={MODEL_DRIVE_FILE_ID}"
+    logger.info(f"Model not found locally. Downloading from Google Drive ({MODEL_DRIVE_FILE_ID})...")
+    try:
+        gdown.download(url, MODEL_PATH, quiet=False)
+        if os.path.exists(MODEL_PATH):
+            logger.info(f"Model downloaded successfully to {MODEL_PATH}")
+        else:
+            logger.error("Model download appeared to finish but file is missing.")
+    except Exception as e:
+        logger.error(f"Failed to download model from Drive: {e}")
+
 # ── Class names (sorted to match training order) ──────────────────────────────
 CLASS_NAMES = [
     "Apple___Apple_scab",
@@ -66,6 +105,8 @@ def load_model():
     global _model
     if _model is not None:
         return _model
+
+    _download_model_if_missing()
 
     try:
         import tensorflow as tf

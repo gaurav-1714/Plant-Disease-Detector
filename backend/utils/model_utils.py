@@ -33,15 +33,15 @@ def _download_model_if_missing():
     if os.path.exists(MODEL_PATH):
         return  # already present (e.g. committed to the repo, or downloaded previously)
 
-    if not MODEL_DRIVE_FILE_ID:
-        return  # no Drive file configured — nothing to download
+    # if not MODEL_DRIVE_FILE_ID:
+    #     return  # no Drive file configured — nothing to download
 
-    try:
-        import gdown
-    except ImportError:
-        logger.warning("gdown not installed — cannot auto-download model from Drive. "
-                        "Add 'gdown' to requirements.txt.")
-        return
+    # try:
+    #     import gdown
+    # except ImportError:
+    #     logger.warning("gdown not installed — cannot auto-download model from Drive. "
+    #                     "Add 'gdown' to requirements.txt.")
+    #     return
 
     os.makedirs(os.path.dirname(MODEL_PATH) or ".", exist_ok=True)
     url = f"https://drive.google.com/uc?id={MODEL_DRIVE_FILE_ID}"

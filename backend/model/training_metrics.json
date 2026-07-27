@@ -1,0 +1,6 @@
+{
+  "val_loss": 3.387930154800415,
+  "val_accuracy": 0.07457463443279266,
+  "val_top3_accuracy": 0.19433221220970154,
+  "num_classes_trained": 38
+}
